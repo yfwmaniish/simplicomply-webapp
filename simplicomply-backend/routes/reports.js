@@ -1,13 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const { authenticateToken } = require('../middleware/auth');
+const { authenticate } = require('../middleware/auth');
 const {
   getReportSummaries,
   getDetailedReport
 } = require('../controllers/reportController');
 
 // Protected routes - authentication required
-router.get('/', authenticateToken, getReportSummaries);
-router.get('/:id', authenticateToken, getDetailedReport);
+router.get('/', authenticate, getReportSummaries);
+router.get('/:id', authenticate, getDetailedReport);
 
 module.exports = router;

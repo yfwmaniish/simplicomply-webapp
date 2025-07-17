@@ -314,13 +314,13 @@ const login = async (req, res) => {
 // @desc    Get current user
 // @route   GET /api/auth/me
 // @access  Private
-const updateProfile = async (req, res) = 3e{
+const updateProfile = async (req, res) => {
   try {
     const { firstName, lastName, jobTitle, department, company } = req.body;
 
     if (!isMongoAvailable()) {
       console.log('🔧 Development mode: Updating current user without MongoDB');
-      const user = developmentUsers.find(u = 3e u._id == req.user.id);
+      const user = developmentUsers.find(u => u._id == req.user.id);
       if (!user) {
         return res.status(404).json({
           success: false,
@@ -382,13 +382,13 @@ const updateProfile = async (req, res) = 3e{
   }
 };
 
-const resetPassword = async (req, res) = 3e {
+const resetPassword = async (req, res) => {
   try {
     const { email, newPassword } = req.body;
 
     if (!isMongoAvailable()) {
       console.log('🔧 Development mode: Resetting password without MongoDB');
-      const user = developmentUsers.find(u = 3e u.email === email);
+      const user = developmentUsers.find(u => u.email === email);
       if (!user) {
         return res.status(404).json({
           success: false,
@@ -429,7 +429,7 @@ const resetPassword = async (req, res) = 3e {
   }
 };
 
-const getMe = async (req, res) = 3e {
+const getMe = async (req, res) => {
   try {
     // Development mode (no MongoDB)
     if (!isMongoAvailable()) {
