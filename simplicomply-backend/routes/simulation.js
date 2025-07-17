@@ -1,13 +1,12 @@
 const express = require('express');
 const router = express.Router();
+const simulationController = require('../controllers/simulationController');
+const { authenticate } = require('../middleware/auth');
 
-// Placeholder simulation routes
-router.get('/', (req, res) => {
-  res.json({
-    success: true,
-    message: 'Simulation endpoint - coming soon',
-    data: {}
-  });
-});
+// Get all simulations
+router.get('/', authenticate, simulationController.getSimulations);
+
+// Get simulation by ID
+router.get('/:id', authenticate, simulationController.getSimulationById);
 
 module.exports = router;

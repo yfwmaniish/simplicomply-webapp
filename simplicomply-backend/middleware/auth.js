@@ -1,5 +1,64 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const mongoose = require('mongoose');
+
+// Conditionally load User model only if MongoDB is available
+let User;
+try {
+  User = require('../models/User');
+} catch (error) {
+  console.warn('User model not loaded in development mode');
+}
+
+// Development mode user storage
+let developmentUsers = [
+  {
+    _id: 1,
+    firstName: 'Test',
+    lastName: 'User',
+    email: 'test@example.com',
+    password: 'password123',
+    jobTitle: 'Developer',
+    department: 'Engineering',
+    company: 'Test Company',
+    role: 'user',
+    isActive: true,
+    createdAt: new Date(),
+    lastLogin: new Date()
+  },
+  {
+    _id: 2,
+    firstName: 'Admin',
+    lastName: 'User',
+    email: 'admin@example.com',
+    password: 'admin123',
+    jobTitle: 'Administrator',
+    department: 'IT',
+    company: 'Test Company',
+    role: 'admin',
+    isActive: true,
+    createdAt: new Date(),
+    lastLogin: new Date()
+  },
+  {
+    _id: 3,
+    firstName: 'Manager',
+    lastName: 'User',
+    email: 'manager@example.com',
+    password: 'manager123',
+    jobTitle: 'Manager',
+    department: 'Operations',
+    company: 'Test Company',
+    role: 'manager',
+    isActive: true,
+    createdAt: new Date(),
+    lastLogin: new Date()
+  }
+];
+
+// Check if MongoDB is available
+const isMongoAvailable = () => {
+  return global.mongoConnected === true;
+};
 
 // Middleware to verify JWT token
 const authenticate = async (req, res, next) => {
@@ -14,7 +73,15 @@ const authenticate = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id);
+    let user;
+
+    // Development mode (no MongoDB)
+    if (!isMongoAvailable()) {
+      user = developmentUsers.find(u => u._id === decoded.id);
+    } else {
+      // Production mode (with MongoDB)
+      user = await User.findById(decoded.id);
+    }
 
     if (!user) {
       return res.status(401).json({
@@ -87,7 +154,15 @@ const optionalAuth = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id);
+    let user;
+
+    // Development mode (no MongoDB)
+    if (!isMongoAvailable()) {
+      user = developmentUsers.find(u => u._id === decoded.id);
+    } else {
+      // Production mode (with MongoDB)
+      user = await User.findById(decoded.id);
+    }
 
     if (user && user.isActive) {
       req.user = user;
