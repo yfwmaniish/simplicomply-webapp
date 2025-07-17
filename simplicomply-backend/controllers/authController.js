@@ -314,7 +314,122 @@ const login = async (req, res) => {
 // @desc    Get current user
 // @route   GET /api/auth/me
 // @access  Private
-const getMe = async (req, res) => {
+const updateProfile = async (req, res) = 3e{
+  try {
+    const { firstName, lastName, jobTitle, department, company } = req.body;
+
+    if (!isMongoAvailable()) {
+      console.log('🔧 Development mode: Updating current user without MongoDB');
+      const user = developmentUsers.find(u = 3e u._id == req.user.id);
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: 'User not found'
+        });
+      }
+
+      user.firstName = firstName || user.firstName;
+      user.lastName = lastName || user.lastName;
+      user.jobTitle = jobTitle || user.jobTitle;
+      user.department = department || user.department;
+      user.company = company || user.company;
+
+      res.json({
+        success: true,
+        message: 'Profile updated successfully (Development Mode)',
+        data: {
+          id: user._id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          jobTitle: user.jobTitle,
+          department: user.department,
+          company: user.company,
+          role: user.role,
+          isActive: user.isActive
+        }
+      });
+      return;
+    }
+
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    user.firstName = firstName || user.firstName;
+    user.lastName = lastName || user.lastName;
+    user.jobTitle = jobTitle || user.jobTitle;
+    user.department = department || user.department;
+    user.company = company || user.company;
+
+    await user.save();
+
+    res.json({
+      success: true,
+      message: 'Profile updated successfully',
+      data: user.getProfileSummary()
+    });
+  } catch (error) {
+    console.error('Update profile error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error during profile update'
+    });
+  }
+};
+
+const resetPassword = async (req, res) = 3e {
+  try {
+    const { email, newPassword } = req.body;
+
+    if (!isMongoAvailable()) {
+      console.log('🔧 Development mode: Resetting password without MongoDB');
+      const user = developmentUsers.find(u = 3e u.email === email);
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: 'User not found'
+        });
+      }
+
+      user.password = newPassword;
+
+      res.json({
+        success: true,
+        message: 'Password reset successfully (Development Mode)'
+      });
+      return;
+    }
+
+    const user = await User.findByEmail(email);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    user.password = newPassword;
+    await user.save();
+
+    res.json({
+      success: true,
+      message: 'Password reset successfully'
+    });
+  } catch (error) {
+    console.error('Reset password error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error during password reset'
+    });
+  }
+};
+
+const getMe = async (req, res) = 3e {
   try {
     // Development mode (no MongoDB)
     if (!isMongoAvailable()) {
@@ -373,5 +488,7 @@ const getMe = async (req, res) => {
 module.exports = {
   register,
   login,
-  getMe
+  getMe,
+  updateProfile,
+  resetPassword
 };

@@ -12,7 +12,9 @@ const {
 const {
   register,
   login,
-  getMe
+  getMe,
+  updateProfile,
+  resetPassword
 } = require('../controllers/authController');
 
 // @route   POST /api/auth/register
@@ -29,5 +31,15 @@ router.post('/login', validateLogin, login);
 // @desc    Get current user
 // @access  Private
 router.get('/me', authenticate, getMe);
+
+// @route   PUT /api/auth/profile
+// @desc    Update user profile
+// @access  Private
+router.put('/profile', authenticate, updateProfile);
+
+// @route   POST /api/auth/reset-password
+// @desc    Reset user password
+// @access  Public
+router.post('/reset-password', resetPassword);
 
 module.exports = router;
