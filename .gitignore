@@ -4,6 +4,7 @@
 /node_modules
 /.pnp
 .pnp.js
+simplicomply-backend/node_modules
 
 # testing
 /coverage
@@ -18,6 +19,19 @@
 .env.test.local
 .env.production.local
 
+# Environment files
+.env
+simplicomply-backend/.env
+
+# Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Database
+*.db
+*.sqlite
+
+# Upload directories
+uploads/
+simplicomply-backend/uploads/
